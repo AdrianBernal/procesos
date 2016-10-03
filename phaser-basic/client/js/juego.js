@@ -141,8 +141,10 @@ function create() {
         //star.body.bounce.y = 0.7 + Math.random() * 0.2;
         star.checkWorldBounds = true;
     }
-     text="Vidas: "+player.vidas;
-    board=game.add.text(game.world.width-150,30,text,style);
+     text1="Vidas1: "+player.vidas;
+    player.board=game.add.text(150,30,text1,style);
+    text2="Vidas2: "+player2.vidas;
+    player2.board=game.add.text(game.world.width-150,30,text2,style);
 
     textContador=game.add.text(game.world.width-155,60,'Tiempo:0',style);
     timer=game.time.events.loop(Phaser.Timer.SECOND,updateContador,this);
@@ -169,7 +171,7 @@ function update() {
     
     //game.physics.arcade.overlap(stars, platforms, endStar, null,this)
     game.physics.arcade.overlap(player,grupoFin,endLevel,null,this);
-
+    game.physics.arcade.overlap(player2,grupoFin,endLevel,null,this);
     //  Reset the players velocity (movement)
     player.body.velocity.x = 0;
    
@@ -275,7 +277,7 @@ function collectStar (player, star) {
     // Removes the star from the screen
     //console.log('jugador con estrella');
     player.vidas=player.vidas-1.
-    board.setText("Vidas: "+player.vidas);
+    player.board.setText("Vidas1: "+player.vidas);
     if (player.vidas<=0)
     {
         console.log("Has muerto!");
@@ -296,8 +298,8 @@ function endStar (star, platform) {
 function endLevel(player,heaven){
     console.log('Conseguiste completar el nivel');
     game.time.events.remove(timer);
-    board.setText("Nivel completado!");
-    board.x=game.world.width-247;
+    player.board.setText("Nivel completado!");
+    player.board.x=game.world.width-247;
     player.kill();
 }
 
