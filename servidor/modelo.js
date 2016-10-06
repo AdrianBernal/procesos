@@ -18,3 +18,6 @@ function Usuario(nombre){
 	this.nombre=nombre;
 	this.nivel=undefined;
 }
+
+module.exports.Juego=Juego;
+module.exports.Usuario=Usuario;

@@ -1,3 +1,5 @@
+var modelo=require('./modelo.js');
+
 describe("El juego niveles inicialmente...", function() {
 	var juego;
 	beforeEach(function(){
