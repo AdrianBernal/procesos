@@ -1,0 +1,14 @@
+{
+  "name": "procesos",
+  "version": "0.0.1",
+  "main":"node-express.js",
+  "scripts":{
+  	"start":"node node-express.js"
+  },
+  "engines": {
+    "node": "4.6.0"
+  },
+  "dependencies": {
+    "express": "3.3.5"
+  }
+}
