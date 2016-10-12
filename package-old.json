@@ -1,0 +1,27 @@
+{
+  "name": "procesos",
+  "version": "0.0.1",
+  "main": "node-express.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node node-express.js"
+  },
+  "engines": {
+    "node": "4.6.0"
+  },
+  "dependencies": {
+    "express": "3.3.5"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AdrianBernal/procesos.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AdrianBernal/procesos/issues"
+  },
+  "homepage": "https://github.com/AdrianBernal/procesos#readme",
+  "description": ""
+}
