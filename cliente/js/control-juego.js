@@ -1,9 +1,14 @@
 //Funciones que modifican el index
 //var url="http://127.0.0.1:1338/";
 var url=window.location.href;
+var game;
 
 function inicio(){
-	mostrarCabecera();
+	if ($.cookie("nombre")!=undefined) {
+		comprobarUsuario();
+	} else {
+		mostrarCabecera();
+	}
 }
 
 function borrarControl(){
@@ -11,7 +16,11 @@ function borrarControl(){
 }
 
 function mostrarCabecera(){
-	$('#cabecera').remove();
+	$('#control').empty();
+	/*$('#cabecera').remove();
+	$('#enh').remove();
+	$('#datos').remove();
+	$('#siguienteBtn').remove();*/
 	$('#control').append('<div id="cabecera"><h2>Nombre jugador</h2><p><input type="text" id="nombreInput" placeholder="introduce tu nombre"></p>');
 	botonNombre();
 }
@@ -28,25 +37,78 @@ function botonNombre(){
 	})
 }
 
-function mostrarInfoJugador(jugador){
-	$('#nombreText').remove();
-	$('#cabecera').append('<p id="nombreText">'+jugador.nombre+' Id:'+jugador.id+'</p>');
-	$('#nivelText').remove();
-	$('#cabecera').append('<h4 id="nivelText">Nivel: '+jugador.nivel+'</h4>');
-	$('#help').remove();
-	$('#cabecera').append('<p id="help">Utiliza las flechas para moverte. Debes alcanzar el cielo en el menor tiempo posible</p>');
+function mostrarInfoJugador(){
+	var nombre=$.cookie('nombre');
+	var id=$.cookie('id');
+	var nivel=$.cookie('nivel');
+	$('#control').empty();
+	$('#control').append('<div id="cabecera"><h2>Panel</h2></div>')
+	$('#control').append('<div id="datos">Nombre: '+nombre+' Nivel: '+nivel+' Id:'+id+'</div>');
+	siguienteNivel();
+}
+
+function siguienteNivel(){
+		$('#control').append('<button type="button" id="siguienteBtn" class="btn btn-primary btn-lg">Siguiente Nivel</button>');
+		$('#siguienteBtn').on('click',function(){
+			$('#siguienteBtn').remove();
+			$('#enh').remove();
+			$('#res').remove();
+  			$('#resultados').remove();
+			crearNivel($.cookie('nivel'));
+		});
+}
+
+function noHayNiveles(){
+	$('#juegoId').append("<h2 id='enh'>Lo siento, no tenemos más niveles</h2>");
+	$('#control').append('<button type="button" id="siguienteBtn" class="btn btn-primary btn-md">Volver a empezar</button>')
+	$('#siguienteBtn').on('click',function(){
+		$('#siguienteBtn').remove();
+			reset();
+	});
+}
+
+function nivelCompletado(tiempo){
+	game.destroy();
+	//game.state.clearCurrentState();
+	//shutdown();
+	$('#juegoId').append("<h2 id='enh'>Enhorabuena!</h2>");
+	comunicarNivelCompletado(tiempo);
+	obtenerResultados();
+}
+
+function mostrarResultados(datos){
+  //eliminarGame();
+  //eliminarCabeceras();
+  $('#res').remove();
+  $('#resultados').remove();
+  $('#juegoId').append('<h3 id="res">Resultados</h3>');
+  var cadena="<table id='resultados' class='table table-bordered table-condensed'><tr><th>Nombre</th><th>Nivel</th><th>Tiempo</th></tr>";
+    for(var i=0;i<datos.length;i++){
+      cadena=cadena+"<tr><td>"+datos[i].nombre+"</td><td> "+datos[i].nivel+"</td>"+"</td><td> "+datos[i].tiempo+"</td></tr>";      
+    }
+    cadena=cadena+"</table>";
+    $('#juegoId').append(cadena);
 }
 
 function reset(){
-	borrarJuego;
-	inicio();
+	borrarJuego();
+	borrarCookies();
+	mostrarCabecera();
+	//borrarJuego;
+	//inicio();
+}
+
+function borrarCookies(){
+	$.removeCookie("nombre");
+	$.removeCookie("id");
+	$.removeCookie("nivel");
 }
 
 function borrarJuego(){
-	$('#juegoId').empty();
 	if (game!=undefined){
 		game.destroy();
 	}
+	$('#juegoId').empty();
 }
 
 function resultados(){
@@ -55,6 +117,11 @@ function resultados(){
 
 }
 
+function borrarCookies(){
+	$.removeCookie('nombre');
+	$.removeCookie('id');
+	$.removeCookie('nivel');
+}
 
 //Funciones de comunicación con el servidor
 
@@ -65,8 +132,42 @@ function crearUsuario(nombre){
 	$.getJSON(url+"crearUsuario/"+nombre,function(datos){
 		//To-Do: datos tiene la respuesta del servidor
 		//mostrar los datos del usuario
-		
-		mostrarInfoJugador(datos);
-		crearNivel("1");
+		$.cookie('nombre',datos.nombre);
+		$.cookie('id',datos.id);
+		$.cookie('nivel',datos.nivel);
+		mostrarInfoJugador();
+	});
+}
+
+function comprobarUsuario(){
+	var id=$.cookie('id');
+	//Comprobar id
+	$.getJSON(url+'comprobarUsuario/'+id,function(datos){
+		if(datos.nivel<0){
+			//borrar Cookies
+			borrarCookies();
+			mostrarCabecera();
+		} else {
+			$.cookie('nivel',datos.nivel);
+			mostrarInfoJugador();
+		}
+	});
+}
+
+function comunicarNivelCompletado(tiempo){
+	var id=$.cookie("id");
+
+	$.getJSON(url+'nivelCompletado/'+id+"/"+tiempo,function(datos){
+			$.cookie("nivel",datos.nivel);
+			mostrarInfoJugador();
+	});	
+}
+
+function obtenerResultados(){
+	//var id=$.cookie("id");
+	//$.getJSON(url+'obtenerResultados/'+id,function(datos){
+	$.getJSON(url+'obtenerResultados/',function(datos){
+			//$.cookie("nivel",datos.nivel);
+			mostrarResultados(datos);
 	});
 }

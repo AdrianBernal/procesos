@@ -6,7 +6,7 @@ var port=config.port;
 var exp=require("express");
 var app=exp(); 
 var modelo=require("./servidor/modelo.js");
-
+var debug=true;
 var juego= new modelo.Juego();
 
 //app.use(app.router);
@@ -19,11 +19,51 @@ app.get("/",function(request,response){
 });
 
 app.get("/crearUsuario/:nombre",function(request,response){
-	//To-Do: crear el usuario con el nombre
 	var usuario = new modelo.Usuario(request.params.nombre);
 	juego.agregarUsuario(usuario);
-	console.log("Nombre: "+usuario.nombre);
-	response.json(usuario);
+	var id=usuario.id;
+	usuario=juego.obtenerUsuario(id);
+	if(debug){console.log("Nombre: "+usuario.nombre);}
+	response.send({'nombre':usuario.nombre,'nivel':usuario.nivel,'id':usuario.id});
+});
+
+app.get("/comprobarUsuario/:id",function(request,response){
+	var id = request.params.id;
+	var usuario = juego.obtenerUsuario(id);
+	var json={'nivel':-1};
+	if(debug){console.log("comprobar Usuario nivel: "+usuario.nivel);}
+	if (usuario!=undefined){		
+		json={'nivel':usuario.nivel};
+	}
+	response.send(json);
+});
+
+app.get('/nivelCompletado/:id/:tiempo',function(request,response){
+	var id=request.params.id;
+	var tiempo=request.params.tiempo;
+	var usuario=juego.obtenerUsuario(id);
+	juego.agregarResultado(new modelo.Resultado(usuario.nombre,usuario.nivel,tiempo));
+	usuario.nivel+=1;
+	if(debug){console.log(juego.resultados);}
+	if (usuario!=undefined){		
+		json={'nivel':usuario.nivel};
+	}
+	response.send(json);
+});
+
+
+//app.get('/obtenerResultados/:id',function(request,response){
+app.get('/obtenerResultados/',function(request,response){
+	//var id=request.params.id;
+	//var usuario=juego.obtenerUsuario(id);
+	var json={'resultados':[]};
+	/*if (usuario){
+		json=juego.resultados;
+	}*/
+	if (juego!=undefined){
+		json=juego.resultados;
+	}
+	response.send(json);
 });
 
 console.log("Servidor escuchando en el puerto "+port);

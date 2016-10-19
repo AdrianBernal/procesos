@@ -3,14 +3,16 @@
 <head> 
 	<meta charset="UTF-8" />
     <title>Phaser - Making your first game, part 9</title>
-	<script type="text/javascript" src="lib/phaser.min.js" ></script>
+
+    <script type="text/javascript" src="lib/phaser.min.js" ></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="lib/jquery.cookie.js" ></script>
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/juego.js" ></script>
-    <script type="text/javascript" src="js/control-juego.js" ></script>
+    
 </head>
 <body>
     <nav class="navbar navbar-default">
@@ -21,7 +23,7 @@
             <ul class="nav navbar-nav">
                 <li class="active"><a href="">Inicio</a></li>
                 <li><a onclick="reset()">Reinicar</a></li>
-                <li><a onclick="resultados()">Resultados</a></li>
+                <li><a onclick="obtenerResultados()">Resultados</a></li>
             </ul>
         </div>
     </nav>
@@ -35,6 +37,9 @@
             </div>
         </div>
     </div>
+    <script type="text/javascript" src="js/control-juego.js" ></script>
+    <script type="text/javascript" src="js/coordenadas.js"></script>
+    <script type="text/javascript" src="js/juego.js" ></script>
     <script type="text/javascript">inicio();</script>
 </body>
 </html>
