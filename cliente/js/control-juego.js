@@ -43,19 +43,28 @@ function mostrarInfoJugador(){
 	var nivel=$.cookie('nivel');
 	$('#control').empty();
 	$('#control').append('<div id="cabecera"><h2>Panel</h2></div>')
-	$('#control').append('<div id="datos">Nombre: '+nombre+' Nivel: '+nivel+' Id:'+id+'</div>');
+	$('#control').append('<div id="datos"><h4> ID:'+id+'<br>Nombre: '+nombre+'<br>Nivel: '+nivel+'</h4></div>');
 	siguienteNivel();
 }
 
 function siguienteNivel(){
-		$('#control').append('<button type="button" id="siguienteBtn" class="btn btn-primary btn-lg">Siguiente Nivel</button>');
-		$('#siguienteBtn').on('click',function(){
+		var nivel=$.cookie('nivel');
+		if (nivel==0) { 
 			$('#siguienteBtn').remove();
 			$('#enh').remove();
 			$('#res').remove();
-  			$('#resultados').remove();
+	  		$('#resultados').remove();
 			crearNivel($.cookie('nivel'));
-		});
+		} else {
+			$('#control').append('<button type="button" id="siguienteBtn" class="btn btn-primary btn-lg">Siguiente Nivel</button>');
+			$('#siguienteBtn').on('click',function(){
+				$('#siguienteBtn').remove();
+				$('#enh').remove();
+				$('#res').remove();
+	  			$('#resultados').remove();
+				crearNivel($.cookie('nivel'));
+			});
+		}
 }
 
 function noHayNiveles(){
@@ -68,7 +77,10 @@ function noHayNiveles(){
 }
 
 function nivelCompletado(tiempo){
-	game.destroy();
+	if (game!=undefined){
+		game.destroy();
+		game=undefined;
+	}
 	//game.state.clearCurrentState();
 	//shutdown();
 	$('#juegoId').append("<h2 id='enh'>Enhorabuena!</h2>");
@@ -107,6 +119,7 @@ function borrarCookies(){
 function borrarJuego(){
 	if (game!=undefined){
 		game.destroy();
+		game=undefined;
 	}
 	$('#juegoId').empty();
 }

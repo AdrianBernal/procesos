@@ -35,6 +35,7 @@ function preload() {
     game.load.image('ground2', 'assets/platform2.png');
     game.load.image('star', 'assets/star.png');
     game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+    game.load.spritesheet('dude_bad', 'assets/dude_bad.png', 32, 48);
     game.load.image('heaven', 'assets/heaven.png');
     game.load.image('meteorito', 'assets/meteorito.png');
 }
@@ -100,7 +101,6 @@ function create() {
         //  Our two animations, walking left and right.
         player.animations.add('left', [0, 1, 2, 3], 10, true);
         player.animations.add('right', [5, 6, 7, 8], 10, true);
-
         //  Finally some stars to collect
         stars = game.add.group();
         meteoritos = game.add.group();
@@ -209,6 +209,7 @@ function collectMeteorito (player, meteorito) {
         //  Add and update the score
         /*score += 10;
         scoreText.text = 'Score: ' + score;*/
+        player.loadTexture('dude_bad');
         player.vidas=player.vidas-1;
         scoreText.text = 'Vidas: ' + player.vidas;
         if (player.vidas==0){
