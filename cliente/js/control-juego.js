@@ -41,9 +41,11 @@ function mostrarInfoJugador(){
 	var nombre=$.cookie('nombre');
 	var id=$.cookie('id');
 	var nivel=$.cookie('nivel');
+	var percen=Math.floor((nivel/3)*100);
 	$('#control').empty();
 	$('#control').append('<div id="cabecera"><h2>Panel</h2></div>')
 	$('#control').append('<div id="datos"><h4> ID:'+id+'<br>Nombre: '+nombre+'<br>Nivel: '+nivel+'</h4></div>');
+	$('#control').append('<div class="progress" id="prog"><div class="progress-bar" aria-valuemin="0" aria-valuemax="100" style="width:'+percen+'%">'+percen+'%</div></div>');
 	siguienteNivel();
 }
 
@@ -77,10 +79,7 @@ function noHayNiveles(){
 }
 
 function nivelCompletado(tiempo){
-	if (game!=undefined){
-		game.destroy();
-		game=undefined;
-	}
+	//borrarJuego();
 	//game.state.clearCurrentState();
 	//shutdown();
 	$('#juegoId').append("<h2 id='enh'>Enhorabuena!</h2>");
@@ -91,8 +90,8 @@ function nivelCompletado(tiempo){
 function mostrarResultados(datos){
   //eliminarGame();
   //eliminarCabeceras();
-  $('#res').remove();
-  $('#resultados').remove();
+  borrarJuego();
+  $('#juegoId').empty();
   $('#juegoId').append('<h3 id="res">Resultados</h3>');
   var cadena="<table id='resultados' class='table table-bordered table-condensed'><tr><th>Nombre</th><th>Nivel</th><th>Tiempo</th></tr>";
     for(var i=0;i<datos.length;i++){

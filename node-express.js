@@ -4,10 +4,12 @@ var config=JSON.parse(fs.readFileSync("config.json"));
 var host=config.host;
 var port=config.port;
 var exp=require("express");
-var app=exp(); 
+var app=exp();
+//var mongo=require("mongodb");
 var modelo=require("./servidor/modelo.js");
 var debug=true;
 var juego= new modelo.Juego();
+var usuariosCol;
 
 //app.use(app.router);
 app.use(exp.static(__dirname +"/cliente"));
@@ -15,6 +17,7 @@ app.use(exp.static(__dirname +"/cliente"));
 app.get("/",function(request,response){
 	var contenido=fs.readFileSync("./index.html");
 	response.setHeader("Content-type","text/html");
+	//insertar({nombre:'Pepe',email:'pe@pe.es',clave:'pepe'});
 	response.send(contenido);
 });
 
@@ -69,3 +72,24 @@ app.get('/obtenerResultados/',function(request,response){
 console.log("Servidor escuchando en el puerto "+port);
 //app.listen(port,host);
 app.listen(process.env.PORT || port);
+
+//var db = new mongo.Db("usuarioscn",new mongo.Server("127.0.0.1",27017));
+
+/*db.open(function(error){
+	console.log("contectado a Mongo: usuarioscn");
+	db.collection("usuario",function(error,col){
+		console.log("tenemos la colección");
+		usuariosCol=col;
+	});	
+});*/
+
+
+/*function insertar(usu){
+	usuariosCol.insertOne(usu,function(err){
+		if(err){
+			console.log("error");
+		} else {
+			console.log("Nuevo usuario creado");
+		}
+	});
+}*/

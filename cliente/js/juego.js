@@ -11,6 +11,8 @@ var scoreText;
 var timer;
 var tiempo=0;
 var tiempoText;
+var shadow;
+var offset = new Phaser.Point(10, 8);
 
 var maxNiveles=3;
 var ni;
@@ -31,13 +33,15 @@ function crearNivel(nivel){
 
 function preload() {
     game.load.image('sky', 'assets/sky.png');
-    game.load.image('ground', 'assets/platform.png');
+    game.load.image('ground1', 'assets/platform.png');
     game.load.image('ground2', 'assets/platform2.png');
     game.load.image('star', 'assets/star.png');
     game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
     game.load.spritesheet('dude_bad', 'assets/dude_bad.png', 32, 48);
     game.load.image('heaven', 'assets/heaven.png');
     game.load.image('meteorito', 'assets/meteorito.png');
+    game.load.image('ground', 'assets/ground.png');
+    game.load.image('bloque', 'assets/bloque.png');
 }
 
 function noHayNiveles() {
@@ -65,7 +69,7 @@ function create() {
         var end = heaven.create(0,-15,'heaven');
 
         //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-        ground.scale.setTo(2, 2);
+        //ground.scale.setTo(2, 2);
         end.scale.setTo(2,1);
 
         //  This stops it from falling away when you jump on it
@@ -74,8 +78,8 @@ function create() {
 
         //  Now let's create two ledges
         for(var i=0;i<4;i++){
-            ledge = platforms.create(coordenadas[ni][i].x,coordenadas[ni][i].y, 'ground2');
-            ledge.body.immovable = true;            
+            ledge = platforms.create(coordenadas[ni][i].x,coordenadas[ni][i].y, 'bloque');
+            ledge.body.immovable = true;   
         }
         /*var ledge = platforms.create(400, 400, 'ground');
         ledge.body.immovable = true;
@@ -89,6 +93,9 @@ function create() {
         // The player and its settings
         player = game.add.sprite(32, game.world.height - 150, 'dude');
         player.vidas=5;
+        /*shadow = game.add.sprite(32, game.world.height - 150, 'dude');
+        shadow.tint = 0x000000;
+        shadow.alpha = 0.6;*/
 
         //  We need to enable physics on the player
         game.physics.arcade.enable(player);
@@ -133,6 +140,7 @@ function create() {
         scoreText = game.add.text(16, 22, 'Vidas: 5', { fontSize: '32px', fill: '#000' });
 
         tiempoText=game.add.text(game.world.width-170,22,'Tiempo:0',{ fontSize: '32px', fill: '#000' });
+        
         tiempo=0;
         timer=game.time.events.loop(Phaser.Timer.SECOND,updateTiempo,this);
 
