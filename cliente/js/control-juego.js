@@ -54,7 +54,7 @@ function siguienteNivel(){
 			crearNivel($.cookie('nivel'));
 		} else if (nivel==maxNiveles) {
 			$('#juegoId').before("<h2 id='enh'>Lo siento, no tenemos más niveles</h2>");
-			$('#control').append('<button type="button" id="siguienteBtn" class="btn btn-primary btn-md">Volver a empezar</button>')
+			$('#control').append('<button type="button" id="siguienteBtn" class="btn btn-success btn-md">Volver a empezar</button>')
 			$('#siguienteBtn').on('click',function(){
 				$('#enh').remove();
 				$('#siguienteBtn').remove();
@@ -127,6 +127,7 @@ function borrarJuego(){
 		game=undefined;
 	}
 	$('#juegoId').empty();
+	$('#enh').remove();
 }
 
 function resultados(){
