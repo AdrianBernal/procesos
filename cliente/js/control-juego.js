@@ -13,6 +13,34 @@ function inicio(){
 	comprobarUsuario();
 }
 
+/*function crearUsuarioLol(){
+	for (var num=0;num<100;num++) {registroUsuario('jugadorTroll'+num,'passwordTroll');}
+	for (var num=0;num<100;num++) {registroUsuario('jugadorTroll'+num,'passwordTroll');console.log('registrado:'+num);};
+	var nombre="jugadorTroll";
+	//for(var num=0;num<30;num++){
+		console.log("peticion:1");
+		$.getJSON(url+"crearUsuario/jugadorTroll"+num,function(datos){
+			//To-Do: datos tiene la respuesta del servidor
+			//mostrar los datos del usuario
+			//$.cookie('email',datos.email);
+			//$.cookie('id',datos.id);
+			//$.cookie('nivel',datos.nivel);
+			//mostrarInfoJugador();
+			//num++;
+			console.log("jugador insertado:"+num);
+		});
+
+		$.ajax({
+			type: 'GET',
+		  url: url+"crearUsuario/"+nombre,
+		  headers:{origin:url}
+}).done(function(data){
+	console.log('hecho');
+});
+console.log("peticion:2");
+}*/
+
+
 function mostrarCabecera(){
 	$('#control').empty();
 	$('#control').append('<div id="cabecera"><h2>Nombre jugador</h2><p><input type="text" id="nombreInput" placeholder="introduce tu nombre"></p>');
@@ -51,7 +79,8 @@ function siguienteNivel(){
 			$('#enh').remove();
 			$('#res').remove();
 	  		$('#resultados').remove();
-			crearNivel($.cookie('nivel'));
+			//crearNivel($.cookie('nivel'));
+			pedirNivel();
 		} else if (nivel==maxNiveles) {
 			$('#juegoId').before("<h2 id='enh'>Lo siento, no tenemos más niveles</h2>");
 			$('#control').append('<button type="button" id="siguienteBtn" class="btn btn-success btn-md">Volver a empezar</button>')
@@ -68,7 +97,8 @@ function siguienteNivel(){
 				$('#enh').remove();
 				$('#res').remove();
 	  			$('#resultados').remove();
-				crearNivel($.cookie('nivel'));
+				//crearNivel($.cookie('nivel'));
+				pedirNivel();
 			});
 		}
 }
@@ -78,7 +108,8 @@ function reiniciarNivel(){
 			$('#reiniciarBtn').on('click',function(){
 				$('#reiniciarBtn').remove();
 				borrarJuego();
-				crearNivel($.cookie('nivel'));
+				//crearNivel($.cookie('nivel'));
+				pedirNivel();
 			});
 };
 
@@ -205,12 +236,12 @@ function comprobarInputActualizar(){
 	} else {
 		$('#errorPasswordOldText').addClass('hidden');
 	}
-	if (passwordOld==''){
+	/*if (passwordNew==''){
 		$('#errorPasswordNewText').removeClass('hidden');
 		ok=false;
 	} else {
 		$('#errorPasswordNewText').addClass('hidden');
-	}
+	}*/
 	return ok;
 }
 
@@ -227,12 +258,14 @@ function modificarPerfil(){
 		$('#control').append('<p><button type="button" id="actualizarBtn" class="btn btn-primary btn-mdn"><b>Actualizar usuario</b></button>'+
 			'&nbsp;&nbsp;<button type="button" id="eliminarBtn" class="btn btn-danger btn-mdn"><b>Eliminar usuario</b></button></p>');
 		$('#actualizarBtn').on('click',function(){
-			if (comprobarInputActualizar()) {
+			//if (comprobarInputActualizar()) {
 				var email=$('#emailInput').val();
 				var passwordOld=$('#claveInputOld').val();
 				var passwordNew=$('#claveInputNew').val();
+				if (email==''){email=$.cookie('email')}
+				if (passwordNew==''){passwordNew=passwordOld}
 				actualizarUsuario(email,passwordOld,passwordNew);
-			}
+			//}
 		});
 		$('#eliminarBtn').on('click',function(){
 			eliminarUsuario($.cookie('id'));
@@ -242,6 +275,7 @@ function modificarPerfil(){
 		mostrarLogin();
 	}
 }
+
 
 //Funciones de comunicación con el servidor
 
@@ -308,9 +342,11 @@ function loginUsuario(email, password){
 	$.ajax({
 		type:'POST',
 		url:'/login',
+		contentType:'application/json',
+		dataType:'json',
 		data:JSON.stringify({email:email, password:password}),
 		success:function(data){
-			if(data.email==undefined){
+			if(data.email==""){
 				$('#errorLoginText').removeClass('hidden');
 				//mostrarRegistro();
 			} else {
@@ -320,9 +356,7 @@ function loginUsuario(email, password){
 				$.cookie('nivel',data.nivel);
 				mostrarInfoJugador();
 			}
-		},
-		contentType:'application/json',
-		dataType:'json'
+		}
 	});
 }
 
@@ -337,11 +371,14 @@ function registroUsuario(email, password){
 				$('#errorRegistroText').removeClass('hidden');
 				//mostrarRegistro();
 			} else {
-				$.cookie('email',data.email);
+				/*$.cookie('email',data.email);
 				$.cookie('id',data._id);
 				//$.cookie('nivel',data.nivel);
 				$.cookie('nivel', data.nivel);
-				mostrarInfoJugador();
+				mostrarInfoJugador();*/
+				mostrarLogin();
+				//TODO: mostrar info de que se le ha enviado un email
+
 			}
 		},
 		contentType:'application/json',
@@ -368,18 +405,20 @@ function eliminarUsuario(id){
 	});
 }
 
-function actualizarUsuario(email, passwordOld, passwordNew){
+function actualizarUsuario(emailText, passwordOldText, passwordNewText){
 	$.ajax({
 		type:'POST',
 		url:'/actualizarUsuario',
-		data:JSON.stringify({id:$.cookie('id'),email:email, passwordOld:passwordOld, passwordNew:passwordNew}),
+		data:JSON.stringify({id:$.cookie('id'),email:emailText, passwordOld:passwordOldText, passwordNew:passwordNewText}),
 		success:function(data){
-			if (data.resultados<1){
+			console.log('actualizxar');
+			console.log(data);
+			if (data.email==''){
 				//avisar del email no vale
 				$('#errorPasswordLoginText').removeClass('hidden');
 				//mostrarRegistro();
 			} else {
-				$.cookie('email',email);
+				$.cookie('email',emailText);
 				//$.cookie('nivel',data.nivel);
 				mostrarInfoJugador();
 			}
@@ -387,4 +426,14 @@ function actualizarUsuario(email, passwordOld, passwordNew){
 		contentType:'application/json',
 		dataType:'json'
 	});
+}
+
+function pedirNivel(){
+	var uid=$.cookie("id");
+	if (uid!=undefined){
+		$.getJSON(url+"pedirNivel/"+uid,function(data){
+			console.log
+			crearNivel(data);
+		});
+	}
 }

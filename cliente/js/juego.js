@@ -21,17 +21,31 @@ var vivo;
 var maxNiveles=4;
 var ni;
 
-inicializarCoordenadas();
+var nivel;
+var coord;
+var gravedad;
 
-function crearNivel(nivel){
-    ni=parseInt(nivel);
+//inicializarCoordenadas();
+
+function crearNivel(data){
+    if (data.nivel<0){
+        noHayNiveles();
+    } else {
+        game = new Phaser.Game(800, 600, Phaser.AUTO, 'juegoId', { preload: preload, create: create, update: update });
+        nivel=data.id;
+        coord=data.coordenadas;
+        coordGris=data.coordenadasGris;
+        gravedad=data.gravedad;
+    }
+    /*ni=parseInt(nivel);
     if(ni<maxNiveles)
     {
         game = new Phaser.Game(800, 600, Phaser.AUTO, 'juegoId', { preload: preload, create: create, update: update });
     }
     else{
         noHayNiveles();
-    }
+    }*/
+
 }
     
 
@@ -59,6 +73,7 @@ function noHayNiveles() {
 }
 
 function create() {
+
         vivo=true;
     
         //  We're going to be using physics, so enable the Arcade Physics system
@@ -90,14 +105,24 @@ function create() {
         //end.body.immovable = true;
 
         //  Now let's create two ledges
-        for(var i=0;i<coordenadas[ni].length;i++){
+        /*for(var i=0;i<coordenadas[ni].length;i++){
             ledge = platforms.create(coordenadas[ni][i].x,coordenadas[ni][i].y, 'bloque');
             ledge.body.immovable = true;
         }
         for (var i=0;i<coordenadasGris[ni].length;i++){
             ledge = platformsGris.create(coordenadasGris[ni][i].x,coordenadasGris[ni][i].y, 'bloqueGris');
             ledge.body.immovable = true;  
+        }*/
+
+        for(var i=0;i<coord.length;i++){
+            ledge = platforms.create(coord[i][0],coord[i][1], 'bloque');
+            ledge.body.immovable = true;
         }
+        for(var i=0;i<coordGris.length;i++){
+            ledge = platforms.create(coordGris[i][0],coordGris[i][1], 'bloque');
+            ledge.body.immovable = true;
+        }
+
         /*var ledge = platforms.create(400, 400, 'ground');
         ledge.body.immovable = true;
 
@@ -166,7 +191,7 @@ function create() {
 
 
     explosions = game.add.group();
-    explosions.createMultiple(3, 'kaboom');
+    explosions.createMultiple(5, 'kaboom');
     explosions.forEach(setupMeteorito, this);
     function setupMeteorito(met){
         //met.anchor.x = 0.5;
@@ -292,7 +317,7 @@ function lanzarMeteorito(gravedad){
             
     var i=Math.floor((Math.random()*(game.world.width-2)+1));
     //  Create a meteorito inside of the 'meteoritos' group
-    var meteorito = meteoritos.create(i, 60, 'ball'); //i*70,0
+    var meteorito = meteoritos.create(i, 0, 'ball'); //i*70,0
     meteorito.scale.setTo(0.25,0.25);
     meteorito.animations.add('pulse');
     meteorito.play('pulse', 30, true);

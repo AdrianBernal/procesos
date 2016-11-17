@@ -1,0 +1,7 @@
+$.cookie("usr",JSON.stringify(data))<-usr- post
+var usr=JSON.parse($.cookie("usr"));
+Quitar la clave del usuario de la cookie
+
+Controlar cuando se pide el nivel.
+
+Mostrar información de que se te ha mandado un email.
