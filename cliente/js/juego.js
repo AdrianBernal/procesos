@@ -29,6 +29,7 @@ var gravedad;
 
 function crearNivel(data){
     if (data.nivel<0){
+        intentos = 0;
         noHayNiveles();
     } else {
         game = new Phaser.Game(800, 600, Phaser.AUTO, 'juegoId', { preload: preload, create: create, update: update });
@@ -119,7 +120,7 @@ function create() {
             ledge.body.immovable = true;
         }
         for(var i=0;i<coordGris.length;i++){
-            ledge = platforms.create(coordGris[i][0],coordGris[i][1], 'bloque');
+            ledge = platformsGris.create(coordGris[i][0],coordGris[i][1], 'bloqueGris');
             ledge.body.immovable = true;
         }
 
@@ -304,7 +305,7 @@ function collectMeteorito (player, meteorito) {
 function endNivel (player, heaven) {
     player.kill();
     game.time.events.remove(timer);
-    nivelCompletado(tiempo);
+    nivelCompletado(tiempo, player.vidas);
 }
 
 function muereMeteorito(platform,meteorito){

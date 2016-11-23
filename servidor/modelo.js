@@ -17,13 +17,14 @@ function Juego(){
 			return usu._id==id;
 		});
 	}
-	this.obtenerUsuarioLogin=function(email,password){
-		return _.find(this.usuarios,function(usu){
-			return (usu.email==email && usu.password==password);
-		});
+	this.eliminarUsuario=function(id){
+		this.usuarios=_.without(this.usuarios, _.findWhere(this.usuarios,{_id:id}));
 	}
 	this.agregarResultado=function(resultado){
 		this.resultados.push(resultado);
+	}
+	this.eliminarResultado=function(nombre){
+		this.resultados=_.without(this.resultados, _.findWhere(this.usuarios,{nombre:nombre}));
 	}
 }
 
@@ -34,27 +35,21 @@ function Nivel(num,coordenadas,coordenadasGris,gravedad){
 	this.gravedad=gravedad;
 }
 
-function Usuario(nombre){
+function Usuario(nombre, email, password){
 	this.key=(new Date().valueOf()).toString();
 	this.nombre=nombre;
 	this.nivel=0;
-	this.email=nombre;
-	this.password=undefined;
-}
-
-function Usuario(nombre,password){
-	this.key=(new Date().valueOf()).toString();
-	this.nombre=nombre;
-	this.nivel=0;
-	this.email=nombre;
+	this.intentos=0;
+	this.email=email;
 	this.password=password;
 }
 
-function Resultado(nombre,nivel,tiempo){
+function Resultado(nombre,nivel,tiempo,vidas,intentos){
 	this.nombre=nombre;
-	this.email=nombre;
 	this.nivel=nivel;
 	this.tiempo=tiempo;
+	this.vidas=vidas;
+	this.intentos=intentos;
 }
 
 function JuegoFM(archivo){
@@ -63,8 +58,6 @@ function JuegoFM(archivo){
 
 	this.makeJuego=function(){
 		this.array.forEach(function(nivel,i){
-			console.log(nivel.gravedad);
-			console.log(nivel.coordenadas);
 			var nivel=new Nivel(i,nivel.coordenadas,nivel.coordenadasGris,nivel.gravedad);
 			this.juego.agregarNivel(nivel);
 		},this);
