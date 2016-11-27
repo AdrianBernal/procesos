@@ -1,9 +1,9 @@
 
 var fs=require("fs");
 //var config=JSON.parse(fs.readFileSync("config.json"));
-var url="http://procesos.herokuapp.com/";
+//var url="http://procesos.herokuapp.com/";
 //var url="http://127.0.0.1:5000/";
-
+var url="";
 var exp=require("express");
 var app=exp();
 var bodyParser=require("body-parser");
@@ -187,13 +187,17 @@ app.post('/actualizarUsuario',function(request,response){
 	var passwordNew=request.body.passwordNew;
 	var passwordNewCifrada=cifrado.encrypt(passwordNew);
 	var json={'nombre':undefined};
-	usuariosCol.update({_id:ObjectId(id),password:passwordOldCifrada}, {$set: {nombre:nombre,password:passwordNewCifrada}},function(err,result){
-		if (result.result.n!=0){
-	   		json=juego.obtenerUsuario(id);
-	   		json.nombre=nombre
- 		}
-	  	response.send(limpiarUsuario(json));
-	});
+	if (nombre!='' && passwordOld!='' && passwordNew!='') {
+		usuariosCol.update({_id:ObjectId(id),password:passwordOldCifrada}, {$set: {nombre:nombre,password:passwordNewCifrada}},function(err,result){
+			if (result.result.n!=0){
+		   		json=juego.obtenerUsuario(id);
+		   		json.nombre=nombre
+	 		}
+		  	response.send(limpiarUsuario(json));
+		});
+	} else {
+		response.send(json);
+	}
 });
 
 app.get('/pedirNivel/:uid',function(request,response){
