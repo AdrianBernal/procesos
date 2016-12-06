@@ -1,7 +1,7 @@
 var request=require("request");
-//var url='https://procesos.herokuapp.com/';
+var url='https://procesos.herokuapp.com/';
 //var url='http://161.67.8.34:5000/';
-var url='http://127.0.0.1:5000/'
+//var url='http://127.0.0.1:5000/'
 var headers={
 	//'User-Agent': 'request'
 	"User-Agent":"Super Agent/0.0.1",
@@ -82,13 +82,14 @@ function comprobarUsuario(id,nombre,password){
 	console.log("--------------------------------------------------------");
 	console.log("3. Se comprueba que el usuario Pepe con email pepe@pepe.es está confirmado");
 	console.log("--------------------------------------------------------");
-
+	console.log(id);
 	request(options,function(error,response,body){
 		if (!error && response.statusCode==200){
 			var jsonResponse = JSON.parse( body) ;
-
+			console.log(jsonResponse.nivel);
 			if(jsonResponse.nivel<0){
 				console.log("Usuario "+nombre+" no confirmado \n");
+				console.log(error);
 			} else {
 				console.log("Usuario "+jsonResponse.nombre+" confirmado correctamente. Con "+jsonResponse.intentos+" intentos \n");
 				iniciarSesion(jsonResponse.nombre,password)
@@ -387,6 +388,4 @@ function obtenerResultados2(){
 	});
 }
 
-//crearUsuario('Pepe','pepe@pepe.com','pepe');
-
-(function(){console.log('hola')})
+crearUsuario('Pepe5','pepe@pepe.com','pepe');

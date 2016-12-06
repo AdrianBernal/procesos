@@ -1,7 +1,7 @@
 var request=require("request");
-//var url='https://procesos.herokuapp.com/';
+var url='https://procesos.herokuapp.com/';
 //var url='http://161.67.8.34:5000/';
-var url='http://127.0.0.1:5000/'
+//var url='http://127.0.0.1:5000/'
 var headers={
 	//'User-Agent': 'request'
 	"User-Agent":"Super Agent/0.0.1",
@@ -61,7 +61,7 @@ function confirmarUsuario(id,key,nombre,password){
 
 	request(options,function(error,response,body){
 		if (!error && response.statusCode==200){
-			console.log("Usuario "+nombre+" confirmado \n");
+			console.log("Usuario "+nombre+" no es confirmado \n");
 			iniciarSesion(id,key,nombre,password);
 		}
 		else{
@@ -293,4 +293,4 @@ function eliminarUsuario2(id,key,nombre,password){
 	});
 }
 
-crearUsuario('Pepe6','pepe@pepe.com','pepe');
+crearUsuario('Pepe7','pepe@pepe.com','pepe');
