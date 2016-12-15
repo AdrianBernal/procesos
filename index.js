@@ -275,7 +275,7 @@ app.listen(app.get('port'), function() {
 });
 
 
-mongo.connect("mongodb://pepe:pepe@ds048719.mlab.com:48719/usuarioscn", function(err, db) {
+mongo.connect("mongodb://pepe:pepe@ds131878.mlab.com:31878/usuarioscn", function(err, db) {
 //mongo.connect("mongodb://127.0.0.1:27017/usuarioscn", function(err, db) {
 	if (err){
  		console.log("No pudo conectar a la base de datos");
