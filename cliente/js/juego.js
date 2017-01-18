@@ -432,7 +432,7 @@ function update() {
              //  Allow the player to jump if they are touching the ground.
              if (cursors.up.isDown && player.body.touching.down)
              {
-                 player.body.velocity.y = -250;
+                 player.body.velocity.y = -200;
              }
  
              socket.emit('updatePosicion', {nombre:$.cookie("nombre"), nivel:$.cookie("nivel") , x:(player.body.x-3), y:(player.body.y-6), frame:player.frame});
