@@ -3,8 +3,8 @@ var game;
 var usuariosConectados=[];
 var socket=undefined;
 
-//var url="http://procesos.herokuapp.com/";
-var url="http://192.168.1.15:5000/";
+var url="http://procesos.herokuapp.com/";
+//var url="http://192.168.1.15:5000/";
 //var url="http://127.0.0.1:5000/";
 
 $('.toggle-sidebar').click(function(){
@@ -471,6 +471,7 @@ function sumarIntento(){
 
 
 function resetNiveles(){
+	//ToDo: Actualizar infor jugador bien, fallan intentos, y borrar juego.
 	var id=$.cookie("id");
 	$.getJSON('resetNiveles/'+id,function(datos){
 			$.cookie("nivel",datos.nivel);

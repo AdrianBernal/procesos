@@ -432,7 +432,7 @@ function update() {
              //  Allow the player to jump if they are touching the ground.
              if (cursors.up.isDown && player.body.touching.down)
              {
-                 player.body.velocity.y = -200;
+                 player.body.velocity.y = -250;
              }
  
              socket.emit('updatePosicion', {nombre:$.cookie("nombre"), nivel:$.cookie("nivel") , x:(player.body.x-3), y:(player.body.y-6), frame:player.frame});
@@ -616,11 +616,13 @@ function configurarTile(tile){
             tileSprite.body.setSize(16,16,8,9);
             tileSprite.tipo="moneda";
             tileSprite.valor=10;
+            break;
         case 13: //moneda plata
             tileSprite=crearSpriteFromTile(coleccionable,tile);
             tileSprite.body.setSize(16,16,8,9);
             tileSprite.tipo="moneda";
             tileSprite.valor=5;
+            break;
         case 14: //moneda bronce
             tileSprite=crearSpriteFromTile(coleccionable,tile);
             tileSprite.body.setSize(16,16,8,9);
