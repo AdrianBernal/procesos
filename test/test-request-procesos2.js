@@ -1192,4 +1192,4 @@ function eliminarUsuario2(id,nombre,password){
 	});
 }
 
-crearUsuario('Pepe','pepe@pepe.com','pepe');
+crearUsuario('PruebaAPI','procesosisw@gmail.com','api');

@@ -3,9 +3,9 @@ var game;
 var usuariosConectados=[];
 var socket=undefined;
 
-var url="https://procesos.herokuapp.com/";
+//var url="https://procesos.herokuapp.com/";
 //var url="http://192.168.1.15:5000/";
-//var url="http://127.0.0.1:5000/";
+var url="http://127.0.0.1:5000/";
 
 $('.toggle-sidebar').click(function(){
  $('body').toggleClass('sidebar-open');

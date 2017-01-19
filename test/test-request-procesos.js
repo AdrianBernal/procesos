@@ -529,4 +529,4 @@ function obtenerResultados2(nombre){
 	});
 }
 
-crearUsuario('Pepe','pepe@pepe.com','pepe');
+crearUsuario('PruebaAPI','procesosisw@gmail.com','api');

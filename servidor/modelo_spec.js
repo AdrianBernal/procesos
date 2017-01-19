@@ -3,7 +3,7 @@ var modelo=require('./modelo.js');
 describe("El juego niveles inicialmente...", function() {
 	var juego;
   var nombre="PruebaJasmine";
-  var email="prueba@jasmine.es";
+  var email="procesoisw@gmail.com";
   var password="jasmine";
 
 
