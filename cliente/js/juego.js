@@ -62,7 +62,7 @@ function preload() {
     //game.load.tilemap('level', 'assets/tilemaps/level2.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.tilemap('level', null, coordenadas, Phaser.Tilemap.TILED_JSON);
     game.load.spritesheet('tileset', 'assets/tileset.png', 32, 32);
-    game.load.spritesheet('tileset_backgorund', 'assets/tileset_background.png', 32, 32);
+    game.load.spritesheet('tileset_background', 'assets/tileset_background.png', 32, 32);
 
     game.load.image('sky', 'assets/sky.png');
     game.load.image('space', 'assets/starfield.jpg');
@@ -94,7 +94,8 @@ function create() {
     game.layer=game.map.layers[game.map.getLayerIndex('layer')];
     game.background=game.map.layers[game.map.getLayerIndex('background')];
     game.stage.backgroundColor=game.background.properties.background_color;
-    game.audio = game.background.properties.audio;
+    game.audio = game.add.audio(game.background.properties.audio,0.5,true);
+    game.audio.play();
     game.world.resize(game.layer.widthInPixels,game.layer.heightInPixels);
     //game.add.tileSprite(0, 0, game.layer.widthInPixels, game.layer.heightInPixels, 'space');
 
@@ -114,27 +115,10 @@ function create() {
     meteoritos.enableBody = true;
     pesos = game.add.group();
     pesos.enableBody = true;
-    
 
     generarSprites();
-    //game.map.addTilesetImage('tileset', 'gameTiles');
-    //game.layer = game.map.createLayer('layer');
-    //game.map.setCollisionBetween(1, 1000, true, 'layer')
-    //game.layer.resizeWorld();
-
-    
-    
-        
-
-    /*game.map = game.add.tilemap('level');
-    game.map.addTilesetImage('tileset', 'gameTiles');
-    game.layer = game.map.createLayer('layer');
-    game.map.setCollisionBetween(1, 1000, true, 'layer')
-    game.layer.resizeWorld();*/
 
     game.physics.startSystem(Phaser.Physics.ARCADE);
-
-    
 
     player = game.add.sprite(playerX, playerY, 'dude');
     player.vidas=3;
@@ -212,19 +196,29 @@ function create() {
     lives.create(32, 30, 'heart').anchor.set(0.5);
     lives.create(64, 30, 'heart').anchor.set(0.5);
     lives.create(96, 30, 'heart').anchor.set(0.5);
-        //game.foregorund = game.map.createLayer('Foreground');
-        // game.level[0]=game.map.layers[0];
-        // var layer = game.level[0]; 
-        // for (var i = 0; i < layer.height; i++) {
-        //     for (var j = 0; j < layer.width; j++) {
-        //         if (layer.data[i][j].index>0){
 
-        //         }
-        //         /*layer.data[i][j].worldX;
-        //         layer.data[i][j].worldY;
-        //         layer.data[i][j].index;*/
-        //     }
-        // }
+    meteoritosSalida.forEach(function(meteoritoSalida){
+        var meteorito = meteoritos.create(meteoritoSalida.x, 0, 'tileset_background');
+        meteorito.body.gravity.y = 100 + (100 * Math.random() * 0.2);
+        meteorito.frame=meteoritoSalida.frame;
+        meteorito.checkWorldBounds=true;
+        meteorito.outOfBoundsKill=true;
+        game.time.events.loop(Phaser.Timer.SECOND*(3+2 * Math.random()), function(){
+            var meteoritoAux = meteoritos.create(meteoritoSalida.x, 0, 'tileset_background');
+            meteoritoAux.body.gravity.y = 100 + (100 * Math.random() * 0.4);
+            meteoritoAux.frame=meteoritoSalida.frame;
+            meteoritoAux.checkWorldBounds=true;
+            meteoritoAux.outOfBoundsKill=true;
+        }, this);
+    });
+
+    explosions = game.add.group();
+    explosions.createMultiple(5, 'kaboom');
+    explosions.forEach(setupMeteorito, this);
+    function setupMeteorito(met){
+        met.scale.setTo(0.3,0.3);
+        met.animations.add('kaboom');
+    }
 
 /*        vivo=true;
     
@@ -392,6 +386,8 @@ function update() {
         game.physics.arcade.overlap(player, final, endNivel, null, this);
         game.physics.arcade.overlap(player, coleccionable, collect, null, this);
         game.physics.arcade.overlap(player, objetoQuitaVida, collectQuitaVida, null, this);
+        game.physics.arcade.overlap(player, pesos, collectQuitaVida, null, this);
+        game.physics.arcade.overlap(player, meteoritos, collectMeteorito, null, this);
         game.physics.arcade.overlap(player, objetoMata, collectMata, null, this);
         game.physics.arcade.collide(player, objetoQuitaVida);
         // game.physics.arcade.collide(player, platforms);
@@ -403,7 +399,11 @@ function update() {
         // game.physics.arcade.overlap(player, vidas, collectVida, null, this);
         // game.physics.arcade.overlap(player, heaven, endNivel, null, this);
         // game.physics.arcade.overlap(platforms, meteoritos, muereMeteorito, null,this);
-
+        pesos.forEach(function(peso){
+            if (player.x>(peso.x-40)){
+                peso.body.gravity.y = 300;
+            }
+        });
         // //  Reset the players velocity (movement)
          player.body.velocity.x = 0;
 
@@ -525,28 +525,7 @@ function collectMeteorito (player, meteorito) {
         explosion.play('kaboom', 30, false, true);
         // Removes the star from the screen
         meteorito.kill();
-
-        //  Add and update the score
-        if (player.vidas>0) {
-            lives.getTop().destroy();
-            player.vidas=player.vidas-1;
-            if (player.vidas==0){
-                player.loadTexture('dead');
-                player.body.setSize(48,32);
-                vivo=false;
-                endText = game.add.text(240, 280, '¡Has muerto!', { fontSize: '50px', fill: '#FFF' });
-                game.time.events.remove(timer);
-                comunicarNoJugandoSocket();
-                reiniciarNivel();
-            } else {
-                if (player.vidas>2) {
-                    player.loadTexture('dude_bad2');
-                } else {
-                    player.loadTexture('dude_bad'+player.vidas);
-                }
-            }
-        }
-
+        collectQuitaVida (player, meteorito);
 }
 
 function collectVida (player, vida) {
@@ -600,9 +579,7 @@ function generarSprites(){
     for (var i = 0; i < game.background.height; i++) {
             for (var j = 0; j < game.background.width; j++) {
                 var tileDecoracion=game.background.data[i][j];
-                if (tileDecoracion.index>0){
-                    createBackgroundSpriteFromTile(decoracion,tileDecoracion);
-                }
+                    configurarBackgroundTile(tileDecoracion);
             }
         }
         for (var i = 0; i < game.layer.height; i++) {
@@ -611,6 +588,22 @@ function generarSprites(){
                 configurarTile(tile);
             }
         }
+}
+
+function configurarBackgroundTile(tile){
+    var tileSprite;
+    switch(tile.index){
+        case -1:
+        case 0:
+            break;
+        case 111: //roca
+        case 158: //bomba
+            meteoritosSalida.push({x:tile.worldX, y:tile.worldY, frame:tile.index-100});
+            break;
+        default:
+            createBackgroundSpriteFromTile(decoracion,tile);
+            break;
+    }
 }
 
 function configurarTile(tile){
@@ -669,8 +662,13 @@ function configurarTile(tile){
             tileSprite.tipo="llave";
             tileSprite.color="azul";
             break;
+        case 41:
         case 19: //cartel exit
             tileSprite=crearSpriteFromTile(final,tile);
+            break;
+        case 32:
+            tileSprite=crearSpriteFromTile(final,tile);
+            tileSprite.body.setSize(32,18,0,14);
             break;
         case 23: //pinchos derecha
             tileSprite=crearSpriteFromTile(objetoMata,tile);
@@ -695,7 +693,6 @@ function configurarTile(tile){
         case 22: //player
             playerX=tile.worldX;
             playerY=tile.worldY;
-            console.log(tile);
             break;
         case 28: //superficie agua
         case 29: //superficie lava
@@ -757,7 +754,7 @@ function crearSpriteFromTile(grupo,tile){
 }
 
 function createBackgroundSpriteFromTile(grupo,tile){
-    var tileSprite=grupo.create(tile.worldX, tile.worldY, 'tileset_backgorund');
+    var tileSprite=grupo.create(tile.worldX, tile.worldY, 'tileset_background');
     tileSprite.frame=tile.index-100;
     tileSprite.body.immovable = true;
     return tileSprite;

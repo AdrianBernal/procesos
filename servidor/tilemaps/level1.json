@@ -7,10 +7,12 @@
          "opacity":1,
          "properties":
             {
+             "audio":"dungeon",
              "background_color":"#acc0c1"
             },
          "propertytypes":
             {
+             "audio":"string",
              "background_color":"string"
             },
          "type":"tilelayer",
