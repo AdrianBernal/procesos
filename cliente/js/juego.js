@@ -8,6 +8,7 @@ var cursors;
 var cielo;
 
 var bloques;
+var pesos;
 var objetoMata;
 var objetoQuitaVida;
 var coleccionable;
@@ -60,28 +61,27 @@ function crearNivel(data){
 function preload() {
     //game.load.tilemap('level', 'assets/tilemaps/level2.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.tilemap('level', null, coordenadas, Phaser.Tilemap.TILED_JSON);
-    game.load.image('gameTiles', 'assets/tileset.png');
-    game.load.spritesheet('tilesheet', 'assets/tileset.png', 32, 32);
+    game.load.spritesheet('tileset', 'assets/tileset.png', 32, 32);
+    game.load.spritesheet('tileset_backgorund', 'assets/tileset_background.png', 32, 32);
 
     game.load.image('sky', 'assets/sky.png');
     game.load.image('space', 'assets/starfield.jpg');
-    game.load.image('ground1', 'assets/platform.png');
-    game.load.image('ground2', 'assets/platform2.png');
     game.load.image('star', 'assets/star.png');
     game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
     game.load.spritesheet('dudeGris', 'assets/dudeGris.png', 32, 48);
     game.load.spritesheet('dude_bad1', 'assets/dude_bad1.png', 32, 48);
     game.load.spritesheet('dude_bad2', 'assets/dude_bad2.png', 32, 48);
     game.load.image('heaven', 'assets/heaven.png');
-    game.load.image('meteorito', 'assets/meteorito.png');
-    game.load.image('ground', 'assets/ground.png');
-    game.load.image('bloque', 'assets/bloque.png');
-    game.load.image('bloqueGris', 'assets/bloqueGris.png');
     game.load.spritesheet('ball', 'assets/plasmaball.png', 128, 128);
     game.load.spritesheet('kaboom', 'assets/explode.png', 128, 128);
     game.load.image('dead', 'assets/dead.png');
     game.load.image('vida', 'assets/firstaid.png');
     game.load.image('heart', 'assets/heart.png');
+
+    game.load.audio('castle', 'assets/audio/castle.mp3');
+    game.load.audio('dungeon', 'assets/audio/dungeon.mp3');
+    game.load.audio('spring', 'assets/audio/spring.mp3');
+    game.load.audio('summer', 'assets/audio/summer.mp3');
 }
 
 function noHayNiveles() {
@@ -91,9 +91,12 @@ function noHayNiveles() {
 function create() {
     vivo=true
     game.map = game.add.tilemap('level');
-    game.layer=game.map.layers[0];
+    game.layer=game.map.layers[game.map.getLayerIndex('layer')];
+    game.background=game.map.layers[game.map.getLayerIndex('background')];
+    game.stage.backgroundColor=game.background.properties.background_color;
+    game.audio = game.background.properties.audio;
     game.world.resize(game.layer.widthInPixels,game.layer.heightInPixels);
-    game.add.tileSprite(0, 0, game.layer.widthInPixels, game.layer.heightInPixels, 'space');
+    //game.add.tileSprite(0, 0, game.layer.widthInPixels, game.layer.heightInPixels, 'space');
 
     bloques=game.add.group();
     bloques.enableBody = true;
@@ -109,9 +112,11 @@ function create() {
     final.enableBody = true;
     meteoritos = game.add.group();
     meteoritos.enableBody = true;
+    pesos = game.add.group();
+    pesos.enableBody = true;
     
 
-
+    generarSprites();
     //game.map.addTilesetImage('tileset', 'gameTiles');
     //game.layer = game.map.createLayer('layer');
     //game.map.setCollisionBetween(1, 1000, true, 'layer')
@@ -119,13 +124,7 @@ function create() {
 
     
     
-
-        for (var i = 0; i < game.layer.height; i++) {
-            for (var j = 0; j < game.layer.width; j++) {
-                var tile = game.layer.data[i][j];
-                configurarTile(tile);
-            }
-        }
+        
 
     /*game.map = game.add.tilemap('level');
     game.map.addTilesetImage('tileset', 'gameTiles');
@@ -145,7 +144,7 @@ function create() {
     game.camera.follow(player, Phaser.Camera.FOLLOW_PLATFORMER);
     player.body.setSize(player.width -6, player.height - 6, 3, 6);
     player.body.bounce.y = 0.2;
-    player.body.gravity.y = 300;
+    player.body.gravity.y = 400;
     player.body.collideWorldBounds = true;
 
         //  Our two animations, walking left and right.
@@ -432,7 +431,7 @@ function update() {
              //  Allow the player to jump if they are touching the ground.
              if (cursors.up.isDown && player.body.touching.down)
              {
-                 player.body.velocity.y = -250;
+                 player.body.velocity.y = -225;
              }
  
              socket.emit('updatePosicion', {nombre:$.cookie("nombre"), nivel:$.cookie("nivel") , x:(player.body.x-3), y:(player.body.y-6), frame:player.frame});
@@ -597,6 +596,23 @@ function lanzarVida(){
     vida.body.gravity.y = 100;
 }
 
+function generarSprites(){
+    for (var i = 0; i < game.background.height; i++) {
+            for (var j = 0; j < game.background.width; j++) {
+                var tileDecoracion=game.background.data[i][j];
+                if (tileDecoracion.index>0){
+                    createBackgroundSpriteFromTile(decoracion,tileDecoracion);
+                }
+            }
+        }
+        for (var i = 0; i < game.layer.height; i++) {
+            for (var j = 0; j < game.layer.width; j++) {
+                var tile = game.layer.data[i][j];
+                configurarTile(tile);
+            }
+        }
+}
+
 function configurarTile(tile){
     var tileSprite;
     switch(tile.index){
@@ -656,25 +672,37 @@ function configurarTile(tile){
         case 19: //cartel exit
             tileSprite=crearSpriteFromTile(final,tile);
             break;
+        case 23: //pinchos derecha
+            tileSprite=crearSpriteFromTile(objetoMata,tile);
+            tileSprite.body.setSize(13,28,19,2);
+            break;
+        case 24: //pinchos izquierda
+            tileSprite=crearSpriteFromTile(objetoMata,tile);
+            tileSprite.body.setSize(13,28,0,2);
+            break;
+        case 25: //pinchos arriba
+            tileSprite=crearSpriteFromTile(objetoMata,tile);
+            tileSprite.body.setSize(28,13,2,0);
+            break;
+        case 26: //peso
+            tileSprite=crearSpriteFromTile(pesos,tile);
+            break;
         case 20: //fecha izquierda
         case 21: //flecha derecha
-        case 23: //roca
-        case 24: //hierba
-        case 25: //flor
-        case 26: //seta marrón
         case 27: //seta roja
             tileSprite=crearSpriteFromTile(decoracion,tile);
             break;
         case 22: //player
             playerX=tile.worldX;
             playerY=tile.worldY;
+            console.log(tile);
             break;
         case 28: //superficie agua
         case 29: //superficie lava
             tileSprite=crearSpriteFromTile(objetoMata,tile);
             tileSprite.body.setSize(32,20,0,12);
             break;
-        case 30: //pinchos
+        case 30: //pinchos abajo
             tileSprite=crearSpriteFromTile(objetoMata,tile);
             tileSprite.body.setSize(28,13,2,19);
             break;
@@ -722,8 +750,15 @@ function configurarTile(tile){
 }
 
 function crearSpriteFromTile(grupo,tile){
-    var tileSprite=grupo.create(tile.worldX, tile.worldY, 'tilesheet');
+    var tileSprite=grupo.create(tile.worldX, tile.worldY, 'tileset');
     tileSprite.frame=tile.index-1;
+    tileSprite.body.immovable = true;
+    return tileSprite;
+}
+
+function createBackgroundSpriteFromTile(grupo,tile){
+    var tileSprite=grupo.create(tile.worldX, tile.worldY, 'tileset_backgorund');
+    tileSprite.frame=tile.index-100;
     tileSprite.body.immovable = true;
     return tileSprite;
 }
