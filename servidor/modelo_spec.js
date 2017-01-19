@@ -22,7 +22,7 @@ describe("El juego niveles inicialmente...", function() {
   });
 
 	it("tiene una colección de niveles agregarNivel(nivel), una usuarios registrados, una de usuarios conectados y una de resultados", function() {
-		expect(juego.niveles.length).toEqual(2);
+		expect(juego.niveles.length).toEqual(4);
 		expect(juego.usuariosRegistrados.length).toEqual(0);
     expect(juego.usuariosConectados.length).toEqual(0);
     expect(juego.resultados.length).toEqual(0);
