@@ -3,8 +3,8 @@ var game;
 var usuariosConectados=[];
 var socket=undefined;
 
-var url="https://procesos.herokuapp.com/";
-//var url="http://192.168.1.15:5000/";
+//var url="http://procesos.herokuapp.com/";
+var url="http://192.168.1.15:5000/";
 //var url="http://127.0.0.1:5000/";
 
 $('.toggle-sidebar').click(function(){
@@ -242,12 +242,10 @@ function mostrarEmailEnviado(){
 }
 
 function mostrarEmailRecordarEnviado(){
-	if (borrarJuego(true)){
-		$('#mensajes').append('<h4>Se le ha enviado un email con una contraseña autogenerada.<br>Por favor, revise su buzón de correo.</h4>');
-	}
+	$('#mensajes').append('<h4>Se le ha enviado un email con una contraseña autogenerada.<br>Por favor, revise su buzón de correo.</h4>');
 }
 
-function mostrarLogin(){
+function mostrarLogin(callback){
 	$('#background').addClass("blur");
 	$('#content').load('../html/login.html',function(){
 		$('#loginBtn').on('click',function(){
@@ -268,6 +266,7 @@ function mostrarLogin(){
     	    	$("#loginBtn").click();
     		}
 		});
+		if (callback) callback();
 	});
 }
 
@@ -476,7 +475,10 @@ function resetNiveles(){
 	var id=$.cookie("id");
 	$.getJSON('resetNiveles/'+id,function(datos){
 			$.cookie("nivel",datos.nivel);
-			mostrarInfoJugador();
+			$.cookie("intentos",datos.intentos);
+			mostrarInfoJugador(function(){
+				$('siguienteBtn').removeClass('hidden');
+			});
 	});	
 }
 
@@ -533,8 +535,7 @@ function registroUsuario(nombre, email, password){
 			if (data.nombre==undefined){
 				$('#errorNombreEnUsoText').removeClass('hidden');
 			} else {
-				mostrarLogin();
-				mostrarEmailEnviado();
+				mostrarLogin(mostrarEmailEnviado);
 			}
 		},
 		contentType:'application/json',
@@ -551,8 +552,7 @@ function recordar(nombre){
 			if (data.nombre==undefined){
 				$('#errorNombreNoRegistradoText').removeClass('hidden');
 			} else {
-				mostrarLogin();
-				mostrarEmailRecordarEnviado();
+				mostrarLogin(mostrarEmailRecordarEnviado);
 			}
 		},
 		contentType:'application/json',
@@ -603,7 +603,6 @@ function pedirNivel(){
 			$('#mensajes').empty();
 			$('#juegoId').empty();
 			sumarIntento();
-			borrarJuego(false);
 			crearNivel(data);
 		});
 	}

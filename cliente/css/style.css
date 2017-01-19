@@ -54,6 +54,11 @@
   max-width: 380px;
 }
 
+#id
+{
+  min-height: 40px;
+}
+
 .login-title
 {
     color: #555;

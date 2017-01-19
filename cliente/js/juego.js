@@ -17,7 +17,7 @@ var final;
 
 var stars;
 var meteoritos;
-var meteoritosSalida=[];
+var meteoritosSalida;
 var vidas;
 var explosions;
 var scoreText;
@@ -40,10 +40,6 @@ var lives;
 
 function crearNivel(data){
 
-        /*game.level[0].height;
-        game.level[0].heightInPixels;
-        game.level[0].width;
-        game.level[0].widthInPixels;*/
     if (data.nivel<0){
         intentos = 0;
         noHayNiveles();
@@ -51,15 +47,12 @@ function crearNivel(data){
         game = new Phaser.Game(800, 576, Phaser.AUTO, 'juegoId', { preload: preload, create: create, update: update });
         nivel=data.id;
         coordenadas=JSON.stringify(data.data);
-        /*coordGris=data.coordenadasGris;
-        gravedad=data.gravedad;*/
     }
 
 }
     
 
 function preload() {
-    //game.load.tilemap('level', 'assets/tilemaps/level2.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.tilemap('level', null, coordenadas, Phaser.Tilemap.TILED_JSON);
     game.load.spritesheet('tileset', 'assets/tileset.png', 32, 32);
     game.load.spritesheet('tileset_background', 'assets/tileset_background.png', 32, 32);
@@ -82,6 +75,7 @@ function preload() {
     game.load.audio('dungeon', 'assets/audio/dungeon.mp3');
     game.load.audio('spring', 'assets/audio/spring.mp3');
     game.load.audio('summer', 'assets/audio/summer.mp3');
+    meteoritosSalida=[];
 }
 
 function noHayNiveles() {
@@ -218,170 +212,10 @@ function create() {
     function setupMeteorito(met){
         met.scale.setTo(0.3,0.3);
         met.animations.add('kaboom');
-    }
-
-/*        vivo=true;
-    
-        //  We're going to be using physics, so enable the Arcade Physics system
-        game.physics.startSystem(Phaser.Physics.ARCADE);
-
-        //  A simple background for our game
-        game.add.tileSprite(0, 0, game.width, game.height, 'space');
-        //  The platforms group contains the ground and the 2 ledges we can jump on
-        platforms = game.add.group();
-        platformsGris = game.add.group();
-        heaven = game.add.group();
-
-        //  We will enable physics for any object that is created in this group
-        platforms.enableBody = true;
-        platformsGris.enableBody = true;
-        heaven.enableBody = true;
-
-        // Here we create the ground.
-        var ground = platforms.create(0, game.world.height - 64, 'ground');
-        var end = heaven.create(0,-15,'heaven');
-
-        //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-        end.scale.setTo(2,1);
-
-        //  This stops it from falling away when you jump on it
-        ground.body.immovable = true;
-
-        for(var i=0;i<coord.length;i++){
-            ledge = platforms.create(coord[i][0],coord[i][1], 'bloque');
-            ledge.body.immovable = true;
-        }
-        for(var i=0;i<coordGris.length;i++){
-            ledge = platformsGris.create(coordGris[i][0],coordGris[i][1], 'bloqueGris');
-            ledge.body.immovable = true;
-        }
-
-        // The player and its settings
-        player = game.add.sprite(32, game.world.height - 150, 'dude');
-
-        player.vidas=3;
-        /*shadow = game.add.sprite(32, game.world.height - 150, 'dude');
-        shadow.tint = 0x000000;
-        shadow.alpha = 0.6;*/
-
-        //  We need to enable physics on the player
-/*        game.physics.arcade.enable(player);
-
-        game.camera.follow(player, Phaser.Camera.FOLLOW_PLATFORMER);
-
-        //  Player physics properties. Give the little guy a slight bounce.
-        player.body.setSize(player.width -6, player.height - 6, 3, 6);
-        player.body.bounce.y = 0.2;
-        player.body.gravity.y = 300;
-        player.body.collideWorldBounds = true;
-
-        //  Our two animations, walking left and right.
-        player.animations.add('left', [0, 1, 2, 3], 10, true);
-        player.animations.add('right', [5, 6, 7, 8], 10, true);
-        //  Finally some stars to collect
-        stars = game.add.group();
-        meteoritos = game.add.group();
-        vidas = game.add.group();
-
-        //  We will enable physics for any star that is created in this group
-        stars.enableBody = true;
-        meteoritos.enableBody = true;
-        vidas.enableBody = true;
-    /****/
-/*        stars.physicsBodyType = Phaser.Physics.ARCADE;
-        vidas.physicsBodyType = Phaser.Physics.ARCADE;
-        //meteoritos.physicsBodyType = Phaser.Physics.ARCADE;
-
-        //game.physics.arcade.enable(platforms);
-        //  Here we'll create 12 of them evenly spaced apart
-        for (var i = 0; i < 12; i++)
-        {
-            //  Create a star inside of the 'stars' group
-            var meteorito = meteoritos.create(i * 70, 0, 'ball');
-            meteorito.scale.setTo(0.25,0.25);
-            meteorito.animations.add('pulse');
-            meteorito.play('pulse', 30, true);
-
-            //  Let gravity do its thing
-            meteorito.body.gravity.y = gravedad + (gravedad * Math.random() * 0.2);
-
-            //  This just gives each star a slightly random bounce value
-        }
-
-        //  The score
-        tiempoText=game.add.text(game.world.width-170,game.world.height-45,'Tiempo:0',{ fontSize: '32px', fill: '#FFF' });
-        
-        tiempo=0;
-        timer=game.time.events.loop(Phaser.Timer.SECOND,updateTiempo,this);
-
-
-        explosions = game.add.group();
-        explosions.createMultiple(5, 'kaboom');
-        explosions.forEach(setupMeteorito, this);
-        function setupMeteorito(met){
-            met.scale.setTo(0.3,0.3);
-            met.animations.add('kaboom');
-        }
-
-        //  Our controls.
-        cursors = game.input.keyboard.createCursorKeys();
-
-    socket.on('updatePosicion', function(usuario) {
-        if (usuario.nombre!=$.cookie("nombre") && usuario.nivel==$.cookie("nivel")) {
-            var playerOtro = undefined;
-            $.each(usuariosJugando, function(index,elem){
-                if (elem.nombre===usuario.nombre){
-                    playerOtro=elem;
-                };
-            });
-            if (playerOtro==undefined){
-                playerOtro = game.add.sprite(usuario.x, usuario.y, 'dudeGris');
-                game.physics.arcade.enable(playerOtro);
-                game.world.bringToTop(player);
-                playerOtro.nombre=usuario.nombre;
-                playerOtro.socketid=usuario.socketid;
-                playerOtro.text=game.add.text(usuario.x+16, usuario.y, playerOtro.nombre, { fontSize: '10px', fill: '#FFF' });
-                playerOtro.text.anchor.set(0.5);
-                usuariosJugando.push(playerOtro);
-            } else {
-                playerOtro.x=usuario.x;
-                playerOtro.y=usuario.y;
-                playerOtro.text.x=usuario.x+16;
-                playerOtro.text.y=usuario.y;
-            }
-            playerOtro.frame=usuario.frame;
-        }
-    });
-
-    socket.on('nojugando', function(usuario) {
-        var playerOtro = undefined;
-        $.each(usuariosJugando, function(index,elem){
-            if (elem.socketid==usuario.socketid){
-                playerOtro=elem;
-            };
-        });
-
-        if (playerOtro!=undefined){
-            playerOtro.text.destroy();
-            playerOtro.kill();
-        }
-        usuariosJugando=$.grep(usuariosJugando, function(elem, index){
-            return elem.socketid!=usuario.socketid;
-        });
-    });
-
-    socket.emit('updatePosicion', {nombre:$.cookie("nombre"), nivel:$.cookie("nivel") , x:player.body.x-3, y:player.body.y-6, frame:4});
-
-    lives = this.game.add.group();
-    lives.create(32, this.game.world.height - 30, 'heart').anchor.set(0.5);
-    lives.create(64, this.game.world.height - 30, 'heart').anchor.set(0.5);
-    lives.create(96, this.game.world.height - 30, 'heart').anchor.set(0.5);
-*/    
+    } 
 }
 
 function update() {
-        //game.physics.arcade.collide(player, game.layer);
-        // //  Collide the player and the stars with the platforms
         game.physics.arcade.collide(player, bloques);
         game.physics.arcade.overlap(player, final, endNivel, null, this);
         game.physics.arcade.overlap(player, coleccionable, collect, null, this);
@@ -390,15 +224,6 @@ function update() {
         game.physics.arcade.overlap(player, meteoritos, collectMeteorito, null, this);
         game.physics.arcade.overlap(player, objetoMata, collectMata, null, this);
         game.physics.arcade.collide(player, objetoQuitaVida);
-        // game.physics.arcade.collide(player, platforms);
-        // game.physics.arcade.collide(player, platformsGris);
-        // game.physics.arcade.collide(vidas,  platforms);
-        // //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
-        // game.physics.arcade.overlap(player, stars, collectStar, null, this);
-        // game.physics.arcade.overlap(player, meteoritos, collectMeteorito, null, this);
-        // game.physics.arcade.overlap(player, vidas, collectVida, null, this);
-        // game.physics.arcade.overlap(player, heaven, endNivel, null, this);
-        // game.physics.arcade.overlap(platforms, meteoritos, muereMeteorito, null,this);
         pesos.forEach(function(peso){
             if (player.x>(peso.x-40)){
                 peso.body.gravity.y = 300;
@@ -703,9 +528,7 @@ function configurarTile(tile){
             tileSprite=crearSpriteFromTile(objetoMata,tile);
             tileSprite.body.setSize(28,13,2,19);
             break;
-        case 33: //posicion meteoritos
-            meteoritosSalida.push({x: tile.worldX, y: tile.worldY});
-            break;
+        case 33:
         case 37: //agua cuadrado
         case 38: //lava cuadrado
             tileSprite=crearSpriteFromTile(objetoMata,tile);
